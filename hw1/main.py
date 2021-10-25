@@ -10,6 +10,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 		
         #prob1
         self.btn1_1.clicked.connect(prob1.prob1_1)
+        self.btn1_2.clicked.connect(prob1.prob1_2)
         #self.btn4_1.clicked.connect(self.job4_1)
 
 
