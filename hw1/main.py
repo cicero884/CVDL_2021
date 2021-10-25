@@ -11,8 +11,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         #prob1
         self.btn1_1.clicked.connect(prob1.prob1_1)
         self.btn1_2.clicked.connect(prob1.prob1_2)
-        #self.btn4_1.clicked.connect(self.job4_1)
-
+        self.btn1_3.clicked.connect(lambda: prob1.prob1_3(self.spinBox1_3.value()))
+        
 
 
 if __name__ == "__main__": 
@@ -21,23 +21,3 @@ if __name__ == "__main__":
     mainwindow.show()
     sys.exit(Application.exec_())
 
-#
-##prob1
-#prob1_group=QGroupBox("1.Camera Calibration", window)
-#layout.addWidget(prob1_group)
-#prob1_layout=QVBoxLayout()
-#prob1_group.setLayout(prob1_layout)
-#
-#prob1_layout.addWidget(QPushButton('Corner detection'))
-#prob1_1_btn=QPushButton('intrinsic matrix')
-#prob1_1_btn.clicked.connect(prob1_1)
-#prob1_layout.addWidget(prob1_1_btn)
-#prob1_layout.addWidget(QPushButton('extrinsic matrix'))
-#prob1_layout.addWidget(QPushButton('distortion matrix'))
-#prob1_layout.addWidget(QPushButton('undistorted result'))
-#
-##prob2
-#
-#window.setLayout(layout)
-#window.show()
-#app.exec()
