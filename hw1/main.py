@@ -16,10 +16,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.btn1_5.clicked.connect(prob1.prob1_5)
         
         self.btn2_1.clicked.connect(lambda: prob2.prob2_1(self.lineEdit2.text()))
+        self.btn2_2.clicked.connect(lambda: prob2.prob2_2(self.lineEdit2.text()))
 
 if __name__ == "__main__": 
     Application = QtWidgets.QApplication(sys.argv)
     mainwindow=Ui_MainWindow()
     mainwindow.show()
     sys.exit(Application.exec_())
-
