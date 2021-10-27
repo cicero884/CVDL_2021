@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import sys
 import prob1
-
+import prob2
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -15,8 +15,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.btn1_4.clicked.connect(prob1.prob1_4)
         self.btn1_5.clicked.connect(prob1.prob1_5)
         
-        self.btn2_1.clicked.connect(lambda: prob2.prob2_1(self.lineEdit2.text()))
-        self.btn2_2.clicked.connect(lambda: prob2.prob2_2(self.lineEdit2.text()))
+        self.btn2_1.clicked.connect(lambda: prob2.prob2(self.lineEdit2.text(),0))
+        self.btn2_2.clicked.connect(lambda: prob2.prob2(self.lineEdit2.text(),1))
 
 if __name__ == "__main__": 
     Application = QtWidgets.QApplication(sys.argv)
