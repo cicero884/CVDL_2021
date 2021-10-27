@@ -107,10 +107,10 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="lineEdit2"/>
        </item>
        <item>
-        <widget class="QPushButton" name="btn3_1">
+        <widget class="QPushButton" name="btn2_1">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -123,7 +123,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn3_2">
+        <widget class="QPushButton" name="btn2_2">
          <property name="minimumSize">
           <size>
            <width>0</width>
