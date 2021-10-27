@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>930</width>
+    <width>1044</width>
     <height>414</height>
    </rect>
   </property>
@@ -152,7 +152,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
-        <widget class="QPushButton" name="btn4_1">
+        <widget class="QPushButton" name="btn3_1">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -170,8 +170,31 @@
     <item>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="title">
-       <string>GroupBox</string>
+       <string>4. SIFT</string>
       </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="btn4_1">
+         <property name="text">
+          <string>4.1 Keypoints</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn4_2">
+         <property name="text">
+          <string>4.2 Matched Keypoints</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn4_3">
+         <property name="text">
+          <string>4.3 Warp Images</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
