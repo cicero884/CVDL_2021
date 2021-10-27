@@ -4,8 +4,8 @@ import numpy as np
 CHESS_SIZE=(11,8)
 
 def prob1_1():
-    for i in range(1, 16):
-        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i}.bmp")
+    for i in range(15):
+        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i+1}.bmp")
         ret,corners=cv2.findChessboardCorners(img,CHESS_SIZE)
         if ret==True:
             cv2.drawChessboardCorners(img,CHESS_SIZE,corners,ret)
@@ -21,8 +21,8 @@ def prob1_2():
 
     objpoints = [] # 3d point in real world space
     imgpoints = [] # 2d points in image plane.
-    for i in range(1, 16):
-        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i}.bmp")
+    for i in range(15):
+        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i+1}.bmp")
         ret,corners=cv2.findChessboardCorners(img,CHESS_SIZE,None)
         if ret==True:
             objpoints.append(objp)
@@ -39,8 +39,8 @@ def prob1_3(img_index):
 
     objpoints = [] # 3d point in real world space
     imgpoints = [] # 2d points in image plane.
-    for i in range(1, 16):
-        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i}.bmp")
+    for i in range(15):
+        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i+1}.bmp")
         ret,corners=cv2.findChessboardCorners(img,CHESS_SIZE,None)
         if ret==True:
             objpoints.append(objp)
@@ -57,8 +57,8 @@ def prob1_4():
 
     objpoints = [] # 3d point in real world space
     imgpoints = [] # 2d points in image plane.
-    for i in range(1, 16):
-        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i}.bmp")
+    for i in range(15):
+        img=cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i+1}.bmp")
         ret,corners=cv2.findChessboardCorners(img,CHESS_SIZE,None)
         if ret==True:
             objpoints.append(objp)
@@ -75,20 +75,20 @@ def prob1_5():
 
     objpoints = [] # 3d point in real world space
     imgpoints = [] # 2d points in image plane.
-    for i in range(1, 16):
-        img.append(cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i}.bmp"))
-        ret,corners=cv2.findChessboardCorners(img[i-1],CHESS_SIZE)
+    for i in range(15):
+        img.append(cv2.imread(f"Dataset_CvDl_Hw1/Q1_Image/{i+1}.bmp"))
+        ret,corners=cv2.findChessboardCorners(img[i],CHESS_SIZE)
         if ret==True:
             objpoints.append(objp)
             imgpoints.append(corners)
 
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img[0].shape[::-2], None, None)
-    for i in range(1, 16):
-        h,  w = img[i-1].shape[:2]
+    for i in range(15):
+        h,  w = img[i].shape[:2]
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
         # undistort
-        dst = cv2.undistort(img[i-1], mtx, dist, None, newcameramtx)
-        dst=np.append(dst,img[i-1],axis=1)#dst = dst[y:y+h,x:x+w] 
+        dst = cv2.undistort(img[i], mtx, dist, None, newcameramtx)
+        dst=np.append(dst,img[i],axis=1)#dst = dst[y:y+h,x:x+w] 
         dst=cv2.resize(dst,(1440,720))
         # crop the image
         #x, y, w, h = roi
