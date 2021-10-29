@@ -66,4 +66,32 @@ def prob4_2():
     pyplot.show()
 
 def prob4_3():
+    img1=cv2.imread(f'Dataset_CvDl_Hw1/Q4_Image/Shark1.jpg')
+    img2=cv2.imread(f'Dataset_CvDl_Hw1/Q4_Image/Shark2.jpg')
+    
+    sift=cv2.SIFT_create()
 
+    kp1,des1=sift.detectAndCompute(img1,None)
+    kp2,des2=sift.detectAndCompute(img2,None)
+    kp1,des1=(list(t) for t in zip(*sorted(zip(kp1,des1), key=lambda pair: pair[0].size, reverse=True)))
+    kp1=numpy.asarray(kp1[:200])
+    des1=numpy.asarray(des1[:200])
+    kp2,des2=(list(t) for t in zip(*sorted(zip(kp2,des2), key=lambda pair: pair[0].size, reverse=True)))
+    kp2=numpy.asarray(kp2[:200])
+    des2=numpy.asarray(des2[:200])
+
+    matcher=cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
+    matches=matcher.knnMatch(des1,des2,2)
+
+    good1=[]
+    good2=[]
+    for i,(m1,m2) in enumerate(matches):
+        if m1.distance < 0.65 * m2.distance:
+            good1.append([m1])
+            good2.append([m2])
+    pk1=numpy.float32([ kp1[m.queryIdx].pt for m in good1 ]).reshape(-1,1,2)
+    pk2=numpy.float32([ kp2[m.queryIdx].pt for m in good2 ]).reshape(-1,1,2)
+    M, mask = cv2.findHomography(kp1, kp2, cv2.RANSAC, 5.0)
+    img3=cv2.warpPerspective(img2, M, (img1.shape[1] * 2, img1.shape[0] * 2))
+    pyplot.imshow(img3)
+    pyplot.show()
