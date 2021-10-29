@@ -54,7 +54,7 @@ def prob4_2():
 
     good=[]
     for i,(m1,m2) in enumerate(matches):
-        if m1.distance < 0.65 * m2.distance:
+        if m1.distance < 0.55 * m2.distance:
             good.append([m1])
 
     draw_params=dict(
@@ -86,12 +86,14 @@ def prob4_3():
     good1=[]
     good2=[]
     for i,(m1,m2) in enumerate(matches):
-        if m1.distance < 0.65 * m2.distance:
-            good1.append([m1])
-            good2.append([m2])
-    pk1=numpy.float32([ kp1[m.queryIdx].pt for m in good1 ]).reshape(-1,1,2)
-    pk2=numpy.float32([ kp2[m.queryIdx].pt for m in good2 ]).reshape(-1,1,2)
-    M, mask = cv2.findHomography(kp1, kp2, cv2.RANSAC, 5.0)
-    img3=cv2.warpPerspective(img2, M, (img1.shape[1] * 2, img1.shape[0] * 2))
-    pyplot.imshow(img3)
-    pyplot.show()
+        if m1.distance < 0.55 * m2.distance:
+            good1.append(m1)
+            good2.append(m2)
+    kp1=numpy.float32([ kp1[m.queryIdx].pt for m in good1 ]).reshape(-1,1,2)
+    kp2=numpy.float32([ kp2[m.trainIdx].pt for m in good1 ]).reshape(-1,1,2)
+    M, mask = cv2.findHomography(kp2, kp1, cv2.RANSAC)
+    img2_s=cv2.warpPerspective(img2, M, (2*img1.shape[1],2*img1.shape[0]))
+
+    img2_s[:img1.shape[0],:img1.shape[1]]=img1
+    gray_img=cv2.cvtColor(img2_s, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("result",gray_img)
