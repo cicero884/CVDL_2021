@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1044</width>
+    <width>1112</width>
     <height>414</height>
    </rect>
   </property>
@@ -161,6 +161,15 @@
          </property>
          <property name="text">
           <string>3.1 Stereo Disparity Map</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn3_2">
+         <property name="text">
+          <string>3.2 Check the Disparity Value?
+no camera matrix...
+using SIFT</string>
          </property>
         </widget>
        </item>
