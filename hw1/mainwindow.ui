@@ -167,9 +167,7 @@
        <item>
         <widget class="QPushButton" name="btn3_2">
          <property name="text">
-          <string>3.2 Check the Disparity Value?
-no camera matrix...
-using SIFT</string>
+          <string>3.2 Check the Disparity Value</string>
          </property>
         </widget>
        </item>
