@@ -5,9 +5,12 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras.models import Sequential
+from tensorflow.keras import optimizers
 import numpy as np
 
 Batch_size=128
+Learning_rate=0.001
+Optimizer=optimizers.Adam(learning_rate=Learning_rate)
 
 (x_train, Y_train), (x_test, Y_test) = cifar10.load_data()
 x_train_normalized = x_train.astype('float32') / 255
@@ -70,13 +73,13 @@ def output_img(loss,acc,history):
     plt.legend(['Train', 'Validation'], loc='upper left')
     plt.savefig('loss.png', bbox_inches='tight')
 
-def load_model():
+def load_trained_model():
     model=load_model('q5_trained.h')
     return model
 
 def train():
     model=construct_vgg16()
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer=Optimizer, metrics=['accuracy'])
     history = model.fit(x=x_train_normalized,y=y_train,batch_size=Batch_size,epochs=20,validation_split=0.1,)
     model.save('q5_trained.h')
     # from keras.models import load_model
@@ -85,5 +88,5 @@ def train():
 
 
 
-if __name__ == '__main__':
-    train()
+#if __name__ == '__main__':
+#    train()
