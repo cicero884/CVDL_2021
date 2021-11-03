@@ -80,7 +80,7 @@ def load_trained_model():
 def train():
     model=construct_vgg16()
     model.compile(loss='categorical_crossentropy', optimizer=Optimizer, metrics=['accuracy'])
-    history = model.fit(x=x_train_normalized,y=y_train,batch_size=Batch_size,epochs=20,validation_split=0.1,)
+    history = model.fit(x=x_train_normalized,y=y_train,batch_size=Batch_size,epochs=50,validation_split=0.1,)
     model.save('q5_trained.h')
     # from keras.models import load_model
     loss,acc=model.evaluate(x_test_normalized,y_test)
