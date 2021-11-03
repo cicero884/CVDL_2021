@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import sys
 
-import prob5_train
+import prob5_train.py
 
 cifar_label=['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','trunk']
 
