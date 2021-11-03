@@ -36,9 +36,11 @@ def prob5_4():
     pyplot.show()
 
 def prob5_5(index):
-    index=int(index)
     model=prob5_train.load_trained_model()
-    #model.evaluate(prob5_train.x_test,prob5_train.y_test)
+    if len(index)==0:
+        model.evaluate(prob5_train.x_test,prob5_train.y_test)
+        return
+    index=int(index)
     
     predict = model.predict(prob5_train.x_test[index].reshape(-1, 32, 32, 3))
 
