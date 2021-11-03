@@ -20,40 +20,40 @@ def construct_vgg16():
     model = Sequential()
     model.add(Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(32, 32, 3)))
     model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.1))
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Dropout(0.1))
+
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(32, (3, 3), activation='relu', padding='same'))
+    model.add(Dropout(0.2))
+
     model.add(MaxPooling2D((2, 2)))
     model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
-    model.add(Dropout(0.25))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(Dropout(0.2))
 
     model.add(MaxPooling2D((2, 2)))
     model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
     model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.2))
+    model.add(Flatten())
+    model.add(Dropout(0.2))
 
-    model.add(MaxPooling2D((2, 2)))
-    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
-    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
-    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
-    model.add(Dropout(0.25))
-
-    model.add(MaxPooling2D((2, 2)))
-    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
-    model.add(Dropout(0.25))
-
-    model.add(Dropout(0.25))
-
-    model.add(Dense(512, activation='relu'))
-    model.add(Dense(512, activation='relu'))
-    model.add(Dropout(0.25))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.2))
     model.add(Dense(10, activation='softmax'))
 
     return model
 
-def output_img(loss,acc):
+def output_img(loss,acc,history):
     plt.plot(history.history['accuracy'])
     plt.plot(history.history['val_accuracy'])
     plt.title('Model accuracy')
@@ -77,11 +77,11 @@ def load_model():
 def train():
     model=construct_vgg16()
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    history = model.fit(x=x_train_normalized,y=y_train,batch_size=Batch_size,epochs=50,validation_split=0.1,)
+    history = model.fit(x=x_train_normalized,y=y_train,batch_size=Batch_size,epochs=20,validation_split=0.1,)
     model.save('q5_trained.h')
     # from keras.models import load_model
-    loss,acc=model.evaluate()
-    output_img(loss,acc)
+    loss,acc=model.evaluate(x_test_normalized,y_test)
+    output_img(loss,acc,history)
 
 
 
