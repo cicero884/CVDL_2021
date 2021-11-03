@@ -7,9 +7,9 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras.models import Sequential
 import numpy as np
 
-global Batch_size=128
+Batch_size=128
 
-global (x_train, Y_train), (x_test, Y_test) = cifar10.load_data()
+(x_train, Y_train), (x_test, Y_test) = cifar10.load_data()
 x_train_normalized = x_train.astype('float32') / 255
 x_test_normalized = x_test.astype('float32') / 255
 

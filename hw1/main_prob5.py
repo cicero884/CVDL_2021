@@ -16,7 +16,7 @@ def prob5_1():
     plt.show()
 
 def prob5_2():
-    print('Batch Size {}',format(Batch_size))
+    print('Batch Size {}',format(prob5_train.Batch_size))
     model=prob5_train.load_model()
     parameter=model.get_config()
     print('\n{}',parameter)
