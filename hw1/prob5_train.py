@@ -64,7 +64,7 @@ def output_img(loss,acc,history):
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Validation'], loc='upper left')
     plt.savefig('accuracy.png', bbox_inches='tight')
-
+    plt.clf()
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('Model loss')

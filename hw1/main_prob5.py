@@ -38,22 +38,22 @@ def prob5_4():
 def prob5_5(index):
     index=int(index)
     model=prob5_train.load_trained_model()
-    model.evaluate(prob5_train.x_test,prob5_train.y_test)
+    #model.evaluate(prob5_train.x_test,prob5_train.y_test)
     
-   #predict = model.predict(prob5_train.x_test[index].reshape(-1, 32, 32, 3))
+    predict = model.predict(prob5_train.x_test[index].reshape(-1, 32, 32, 3))
 
-   #testlebal = cifar_label[prob5_train.Y_test[index][0]]
-   #pyplot.title(testlebal)
-   #pyplot.imshow(prob5_train.x_test[index])
-   #pyplot.show()
+    testlebal = cifar_label[prob5_train.Y_test[index][0]]
+    pyplot.title(testlebal)
+    pyplot.imshow(prob5_train.x_test[index])
+    pyplot.show()
 
-   #fig = pyplot.figure()
-   #x = numpy.arange(len(cifar_label))
-   #pyplot.bar(x, predict[0])
-   #pyplot.xticks(x, cifar_label)
-   #fig.set_figheight(6)
-   #fig.set_figwidth(10)
-   #pyplot.show()
+    fig = pyplot.figure()
+    x = numpy.arange(len(cifar_label))
+    pyplot.bar(x, predict[0])
+    pyplot.xticks(x, cifar_label)
+    fig.set_figheight(6)
+    fig.set_figwidth(10)
+    pyplot.show()
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
