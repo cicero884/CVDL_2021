@@ -20,14 +20,23 @@ import random
 
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
-ROOT_DIR = "Q5_Image"
+ROOT_DIR = "q5"
+ORIGIN_DATAS = "./kagglecatsanddogs_3367a/PetImages/"
 
 IMAGE_SIZE = (224, 224)
 NUM_CLASSES = 2
 BATCH_SIZE = 16
 FREEZE_LAYERS = 2
-NUM_EPOCHS = 20
+NUM_EPOCHS = 7
+
+def is_read_successfully(file):
+    try:
+        imgFile = image.load_img(file)
+        return True
+    except Exception:
+        return False
 
 def Get_Random_Eraser(p=0.5, s_l=0.02, s_h=0.4, r_1=0.3, r_2=1/0.3, v_l=0, v_h=255, pixel_level=False):
     def eraser(input_img):
@@ -68,22 +77,22 @@ def Get_Random_Eraser(p=0.5, s_l=0.02, s_h=0.4, r_1=0.3, r_2=1/0.3, v_l=0, v_h=2
 
 
 def Dataset_Preproscess():
-    cat_files = os.listdir(f"{ROOT_DIR}/Cat")
-    dog_files = os.listdir(f"{ROOT_DIR}/Dog")
+    cat_files = os.listdir(f"{ORIGIN_DATAS}/Cat")
+    dog_files = os.listdir(f"{ORIGIN_DATAS}/Dog")
     cat_train, cat_valid = train_test_split(cat_files, test_size=0.2)
     dog_train, dog_valid = train_test_split(dog_files, test_size=0.2)
-    
+
     train_dir = f'{ROOT_DIR}/train'
     valid_dir = f'{ROOT_DIR}/valid'
-    
+
     if os.path.exists(train_dir):
         rmtree(train_dir, ignore_errors=True)
     timeout = 0.001
     while True:
         try:
             os.mkdir(train_dir)
-            os.mkdir(f'{train_dir}/cat')
-            os.mkdir(f'{train_dir}/dog')
+            os.mkdir(f'{train_dir}/Cat')
+            os.mkdir(f'{train_dir}/Dog')
             break
         except PermissionError as e:
             if e.winerror != 5 or timeout >= 2:
@@ -92,9 +101,13 @@ def Dataset_Preproscess():
             timeout *= 2
 
     for file_name in cat_train:
-        copyfile(os.path.join(ROOT_DIR, 'Cat', file_name), os.path.join(train_dir, 'cat', file_name))
+        if is_read_successfully(os.path.join(ORIGIN_DATAS , 'Cat', file_name)):
+            copyfile(os.path.join(ORIGIN_DATAS , 'Cat', file_name), os.path.join(train_dir, 'Cat', file_name))
+        else:
+            print(os.path.join(ORIGIN_DATAS , 'Cat', file_name))
     for file_name in dog_train:
-        copyfile(os.path.join(ROOT_DIR, 'Dog', file_name), os.path.join(train_dir, 'dog', file_name))
+        if is_read_successfully(os.path.join(ORIGIN_DATAS , 'Dog', file_name)):
+            copyfile(os.path.join(ORIGIN_DATAS , 'Dog', file_name), os.path.join(train_dir, 'Dog', file_name))
     print("Finish create train files")
 
     if os.path.exists(valid_dir):
@@ -103,8 +116,8 @@ def Dataset_Preproscess():
     while True:
         try:
             os.mkdir(valid_dir)
-            os.mkdir(f'{valid_dir}/cat')
-            os.mkdir(f'{valid_dir}/dog')
+            os.mkdir(f'{valid_dir}/Cat')
+            os.mkdir(f'{valid_dir}/Dog')
             break
         except PermissionError as e:
             if e.winerror != 5 or timeout >= 2:
@@ -113,11 +126,12 @@ def Dataset_Preproscess():
             timeout *= 2
 
     for file_name in cat_valid:
-        copyfile(os.path.join(ROOT_DIR, 'Cat', file_name), os.path.join(valid_dir, 'Cat', file_name))
+        if is_read_successfully(os.path.join(ORIGIN_DATAS , 'Cat', file_name)):
+            copyfile(os.path.join(ORIGIN_DATAS , 'Cat', file_name), os.path.join(valid_dir, 'Cat', file_name))
     for file_name in dog_valid:
-        copyfile(os.path.join(ROOT_DIR, 'Dog', file_name), os.path.join(valid_dir, 'cat', file_name))
+        if is_read_successfully(os.path.join(ORIGIN_DATAS , 'Dog', file_name)):
+            copyfile(os.path.join(ORIGIN_DATAS , 'Dog', file_name), os.path.join(valid_dir, 'Dog', file_name))
     print("Finish create valid files")
-    
 
 def identity_block(input_tensor, kernel_size, filters, stage, block):
     nb_filter1, nb_filter2, nb_filter3 = filters
@@ -171,7 +185,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2))
     x = Activation('relu')(x)
     return x
 
-def MyResNet50():
+def construct_resnet50():
     img_input = Input(shape=(224, 224, 3)) # image size is 224x224
 
     x = ZeroPadding2D((3, 3))(img_input)
@@ -201,51 +215,50 @@ def MyResNet50():
     x = identity_block(x, 3, [512, 512, 2048], stage=5, block='c')
 
     base_model = Model(img_input, x)
-    TF_WEIGHTS_PATH_NO_TOP = './Q5_Image/pre_train_weight/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'  
+    TF_WEIGHTS_PATH_NO_TOP = './q5/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
     base_model.load_weights(TF_WEIGHTS_PATH_NO_TOP)
 
     x = AveragePooling2D((7, 7), name='avg_pool')(base_model.output)
     x = Flatten()(x)
     x = Dropout(0.5)(x)
     x = Dense(NUM_CLASSES, activation='softmax', name='softmax')(x)
-   
+
     model = Model(inputs=base_model.input, outputs=x)
-    
+
     for layer in model.layers[:-FREEZE_LAYERS]:
         layer.trainable = False
 
     for layer in model.layers[-FREEZE_LAYERS:]:
         layer.trainable = True
-    print(model.summary())
 
     return model
 
-def Training(is_rand_erase):    
+def train(is_rand_erase):    
     train_datagen = ImageDataGenerator(rotation_range=40,
-                                        width_shift_range=0.2,
-                                        height_shift_range=0.2,
-                                        shear_range=0.2,
-                                        zoom_range=0.2,
-                                        horizontal_flip=True,
-                                        fill_mode='nearest',
-                                        preprocessing_function=(Get_Random_Eraser(v_l=0, v_h=1, pixel_level=False) if is_rand_erase else None))
+            width_shift_range=0.2,
+            height_shift_range=0.2,
+            shear_range=0.2,
+            zoom_range=0.2,
+            horizontal_flip=True,
+            fill_mode='nearest',
+            preprocessing_function=(Get_Random_Eraser(v_l=0, v_h=1, pixel_level=False) if is_rand_erase else None))
     train_generator = train_datagen.flow_from_directory(os.path.join(ROOT_DIR, "train"),  # this is the target directory
-                                                        target_size=IMAGE_SIZE,  # all images will be resized to 224x224
-                                                        batch_size=BATCH_SIZE,
-                                                        interpolation='bicubic',
-                                                        class_mode='categorical',
-                                                        seed=42,
-                                                        shuffle=True)
-    
+            target_size=IMAGE_SIZE,  # all images will be resized to 224x224
+            batch_size=BATCH_SIZE,
+            interpolation='bicubic',
+            class_mode='categorical',
+            seed=42,
+            shuffle=True)
+
     validation_datagen = ImageDataGenerator(rescale=1. / 255)
     validation_generator = validation_datagen.flow_from_directory(os.path.join(ROOT_DIR, "valid"),  # this is the target directory
-                                                                  target_size=IMAGE_SIZE,  # all images will be resized to 224x224
-                                                                  batch_size=BATCH_SIZE,
-                                                                  interpolation='bicubic',
-                                                                  class_mode='categorical',
-                                                                  seed=42,
-                                                                  shuffle=False)
-    
+            target_size=IMAGE_SIZE,  # all images will be resized to 224x224
+            batch_size=BATCH_SIZE,
+            interpolation='bicubic',
+            class_mode='categorical',
+            seed=42,
+            shuffle=False)
+
 
 
 
@@ -260,45 +273,43 @@ def Training(is_rand_erase):
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
     tbCallBack = TensorBoard(log_dir=log_dir,  
-                             histogram_freq=0,  
-                             #BATCH_SIZE=600,     
-                             write_graph=True, 
-                             write_grads=True, 
-                             write_images=True,
-                             embeddings_freq=0, 
-                             embeddings_layer_names=None, 
-                             embeddings_metadata=None)
-    
-    model = MyResNet50()
+            histogram_freq=0,  
+            #BATCH_SIZE=600,     
+            write_graph=True, 
+            write_grads=True, 
+            write_images=True,
+            embeddings_freq=0, 
+            embeddings_layer_names=None, 
+            embeddings_metadata=None)
+
+    model = construct_resnet50()
     model.compile(loss='categorical_crossentropy', optimizer=SGD(lr=1e-3), metrics=['accuracy'])
-    
-    filepath = os.path.join(model_dir ,"model_{epoch:03d}_{val_accuracy:.3f}.hdf5")
+
+    filepath = os.path.join(model_path ,"model_{epoch:03d}_{val_accuracy:.3f}.hdf5")
     checkpoint = ModelCheckpoint(filepath, verbose=1, monitor='val_accuracy', save_best_only=True)
     model.fit_generator(train_generator,
-                                  epochs=NUM_EPOCHS,
-                                  steps_per_epoch=train_generator.samples // BATCH_SIZE,
-                                  validation_data=validation_generator,
-                                  validation_steps=validation_generator.samples // BATCH_SIZE,
-                                  callbacks=[tbCallBack, checkpoint])
+            epochs=NUM_EPOCHS,
+            steps_per_epoch=train_generator.samples // BATCH_SIZE,
+            validation_data=validation_generator,
+            validation_steps=validation_generator.samples // BATCH_SIZE,
+            callbacks=[tbCallBack, checkpoint])
     model.save(os.path.join(model_path, "model.h5"))
 
-def Show_Train_Result():
-    img_1 = cv2.imread("./Q5_Image/5.1/1.jpg")
-    img_2 = cv2.imread("./Q5_Image/5.1/2.jpg")
-    cv2.imshow("train result 1", img_1)
-    cv2.imshow("train result 2", img_2)
+def prob5_1():
+    model=construct_resnet50()
+    print(model.summary())
 
-def Show_Tensorboard():
-    img = cv2.imread("./Q5_Image/5.2/1.jpg")
+def prob5_2():
+    img = cv2.imread("./q5/tensorboard.png")
     cv2.imshow("tensorboard", img)
 
-def Classify_Random_Picture():
-    model = MyResNet50()
-    model.load_weights("./Q5_Image/model/model_normal.h5")
-    cat_or_dog = random.randint(0, 1) # 0 as cat, 1 as dog
+def prob5_3():
+    model = construct_resnet50()
+    model.load_weights("./q5/model.h5")
+    cat_or_dog = random.randint(0, 1) # 0 as Cat, 1 as Dog
     while True:
         img_idx = random.randint(0, 12499)
-        img_path = f"./Q5_Image/{'Cat' if cat_or_dog == 0 else 'Dog'}/{img_idx}.jpg"
+        img_path = f"{ORIGIN_DATAS}/{'Cat' if cat_or_dog == 0 else 'Dog'}/{img_idx}.jpg"
         img = image.load_img(img_path, target_size=(224, 224))
         if img is None:
             continue
@@ -307,20 +318,19 @@ def Classify_Random_Picture():
         pred = model.predict(x)[0]
         top_inds = pred.argsort()[::-1][:5]
         cv2_img = cv2.imread(img_path)
-        cv2.imshow(f"{'Cat' if top_inds[0] == 0 else 'dog'}", cv2_img)
-        for i in top_inds:
-            print('    {:.3f}  {}'.format(pred[i], i))
+        cv2.imshow(f"{'Cat' if top_inds[0] == 0 else 'Dog'}", cv2_img)
+       #for i in top_inds:
+       #    print('    {:.3f}  {}'.format(pred[i], i))
         break
 
-def Show_Acc_Diff():
-    img = cv2.imread("./Q5_Image/5.4/1.jpg")
-    cv2.imshow("Acc Compare", img)
+def prob5_4():
+    x = np.arange(2)
+    plt.bar(x, height=[0.9372,0.9184])
+    plt.xticks(x, ['normal','random-erasing'])
+    plt.show()
 
-if __name__ == "__main__":
-    # For generate train & valid data, only need to do once
+#if __name__ == '__main__':
     # Dataset_Preproscess()
-    # For training normally
-    # Training(False)
-    # For training with random eraser
-    # Training(True)
+    # train(True)
     
+
